@@ -18,9 +18,19 @@ onMounted(async () => {
   
   await gameSetup(app, scene);
 
-  handleResize(app, scene.offsetWidth, scene.offsetHeight, config.scene.logicalWidth, config.scene.logicalHeight);
+  handleResize(
+    app, 
+    scene.offsetWidth, scene.offsetHeight, 
+    config.scene.logicalWidth, config.scene.logicalHeight
+  );
   resizeObserver = new ResizeObserver(() => {
-    if (app) handleResize(app, scene.offsetWidth, scene.offsetHeight, config.scene.logicalWidth, config.scene.logicalHeight);
+    if (app) {
+      handleResize(
+        app, 
+        scene.offsetWidth, scene.offsetHeight, 
+        config.scene.logicalWidth, config.scene.logicalHeight
+      );
+    };
   });
   resizeObserver.observe(scene);
 });
@@ -31,7 +41,6 @@ onUnmounted(() => {
   app?.destroy(true, { children: true, texture: true });
   app = null;
 });
-
 </script>
 
 <template>
