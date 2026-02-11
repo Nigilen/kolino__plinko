@@ -1,0 +1,49 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  inline-size: 100%;
+  block-size: 100dvh;
+}
+
+body {
+  font-family: var(--font-family);
+  background-color: var(--secondary-color);
+  color: var(--primary-color);
+}
+
+#app {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  inline-size: 100%;
+  block-size: 100dvh;
+  overflow: hidden;
+}
+
+button {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  font: inherit;
+}
+
+img {
+  inline-size: 100%;
+  block-size: auto;
+}
+
+ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+li {
+  margin: 0;
+  padding: 0;
+}
