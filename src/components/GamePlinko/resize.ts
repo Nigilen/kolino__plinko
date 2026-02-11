@@ -1,10 +1,13 @@
 import type { Application } from "pixi.js";
-import { STATE } from "@/components/GamePlinko/state";
 
-export const handleResize = (app: Application, scene: HTMLDivElement) => {
-  app.renderer.resize(scene.offsetWidth, scene.offsetHeight);
+export const handleResize = (
+  app: Application, 
+  sceneWidth: number, sceneHeight: number,
+  logicalWidth: number, logicalHeight: number
+) => {
+  app.renderer.resize(sceneWidth, sceneHeight);
   app.stage.scale.set(
-    scene.offsetWidth / STATE.LOGICAL_WIDTH, 
-    scene.offsetHeight / STATE.LOGICAL_HEIGHT
+    sceneWidth / logicalWidth, 
+    sceneHeight / logicalHeight
   );
 };
