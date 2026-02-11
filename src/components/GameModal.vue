@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { data } from '@/data';
+import { mainConfig } from '@/config/mainConfig';
 
 const props = defineProps<{
   winValue: number | string;
@@ -19,9 +19,9 @@ const handleModalClose = () => {
 
   <section class="modal">
     <div class="modal__content">
-      <h2 class="modal__title">{{ data.modal.title }}</h2>
+      <h2 class="modal__title">{{ mainConfig.modal.title }}</h2>
       <p class="modal__bonuse">{{ props.winValue }}</p>
-      <button class="modal__button" type="button" @click="handleModalClose">{{ data.modal.button }}</button>
+      <button class="modal__button" type="button" @click="handleModalClose">{{ mainConfig.modal.button }}</button>
     </div>
   </section>
 

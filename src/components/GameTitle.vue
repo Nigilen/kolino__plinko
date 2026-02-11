@@ -1,9 +1,9 @@
 <script lang="ts" setup>
-import { data } from '@/data';
+import { mainConfig } from '@/config/mainConfig';
 </script>
 
 <template>
-  <h1 class="title">{{ data.title }}</h1>
+  <h1 class="title">{{ mainConfig.title }}</h1>
 </template>
 
 <style lang="css" scoped>

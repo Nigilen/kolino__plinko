@@ -3,7 +3,7 @@ import { Application } from 'pixi.js';
 import { onMounted, onUnmounted, ref } from 'vue';
 import { handleResize } from '@/components/GamePlinko/resize';
 import { gameSetup } from './setup';
-import { config } from "@/components/GamePlinko/config";
+import { plinkoConfig } from "@/config/plinkoConfig";
 
 
 const sceneRef = ref<HTMLDivElement | null>(null);
@@ -21,14 +21,14 @@ onMounted(async () => {
   handleResize(
     app, 
     scene.offsetWidth, scene.offsetHeight, 
-    config.scene.logicalWidth, config.scene.logicalHeight
+    plinkoConfig.scene.logicalWidth, plinkoConfig.scene.logicalHeight
   );
   resizeObserver = new ResizeObserver(() => {
     if (app) {
       handleResize(
         app, 
         scene.offsetWidth, scene.offsetHeight, 
-        config.scene.logicalWidth, config.scene.logicalHeight
+        plinkoConfig.scene.logicalWidth, plinkoConfig.scene.logicalHeight
       );
     };
   });

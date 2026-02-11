@@ -2,7 +2,7 @@
 import { ref } from 'vue';
 import GameTitle from '@/components/GameTitle.vue';
 import GameModal from '@/components/GameModal.vue';
-import { data } from '@/data';
+import { mainConfig } from '@/config/mainConfig';
 import GamePlinko from '@/components/GamePlinko/GamePlinko.vue';
 
 const isOpenModal = ref(false);
@@ -33,7 +33,7 @@ const handleCloseModal = () => {
     <Transition>
       <GameModal 
         v-if="isOpenModal" 
-        :winValue="data.modal.bonus" 
+        :winValue="mainConfig.modal.bonus" 
         @modalClose="handleCloseModal" 
       />
     </Transition>

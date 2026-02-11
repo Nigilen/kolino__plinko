@@ -1,4 +1,4 @@
-export const data = {
+export const mainConfig = {
   title: 'Plinko',
   modal: {
     title: 'You win',

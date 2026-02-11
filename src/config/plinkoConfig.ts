@@ -1,4 +1,4 @@
-export const config = {
+export const plinkoConfig = {
   scene: {
     logicalWidth: 400,
     logicalHeight: 250
