@@ -1,17 +1,13 @@
 import { Application } from "pixi.js";
-import { handleResize } from "./resize";
 
-export const gameSetup = async (app: Application, sceneRef: HTMLDivElement) => {
-  if (!sceneRef || !app) return;
-
+export const gameSetup = async (app: Application, scene: HTMLDivElement) => {
   await app.init({
-    width: sceneRef.offsetWidth,
-    height: sceneRef.offsetHeight,
+    width: scene.offsetWidth,
+    height: scene.offsetHeight,
     backgroundColor: 0x000000,
     autoDensity: true,
     antialias: true,
     resolution: window.devicePixelRatio || 1,
   });
-  sceneRef.appendChild(app.canvas);
-  handleResize(app, sceneRef);
-}
+  scene.appendChild(app.canvas);
+};

@@ -4,24 +4,33 @@ import { onMounted, onUnmounted, ref } from 'vue';
 import { handleResize } from '@/components/GamePlinko/resize';
 import { gameSetup } from './setup';
 
-const sceneRef = ref<HTMLDivElement>();
-const app = new Application();
-const resize = () => {
-  if (!sceneRef.value) return;
-  handleResize(app, sceneRef.value);
-};
+const sceneRef = ref<HTMLDivElement | null>(null);
+let app: Application | null = null;
+let resizeObserver: ResizeObserver | null = null;
 
 onMounted( async () => {
-  if (!sceneRef.value) return;
-  await gameSetup(app, sceneRef.value);
-  
-  window.addEventListener('resize', resize);
+  const scene = sceneRef.value;
+  if (!scene) return;
+
+  app = new Application();
+  await gameSetup(app, scene);
+
+  handleResize(app, scene);
+
+  resizeObserver = new ResizeObserver(() => {
+    if (app) handleResize(app, scene);
+  });
+
+  resizeObserver.observe(scene);
 });
 
 onUnmounted(() => {
-  window.removeEventListener('resize', resize);
-  app.destroy();
+  resizeObserver?.disconnect();
+  app?.destroy(true, { children: true, texture: true });
+  app = null;
+  resizeObserver = null;
 });
+
 
 </script>
 
