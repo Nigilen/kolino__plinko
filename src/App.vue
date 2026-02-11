@@ -3,6 +3,7 @@ import { ref } from 'vue';
 import GameTitle from '@/components/GameTitle.vue';
 import GameModal from '@/components/GameModal.vue';
 import { data } from '@/data';
+import GamePlinko from '@/components/GamePlinko/GamePlinko.vue';
 
 const isOpenModal = ref(false);
 const isSpin = ref(false);
@@ -26,6 +27,7 @@ const handleCloseModal = () => {
 <template>
   <main class="main">
     <GameTitle />
+    <GamePlinko />
   </main>
   <Teleport to="body">
     <Transition>

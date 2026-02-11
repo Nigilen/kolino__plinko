@@ -1,0 +1,4 @@
+export const STATE = {
+  LOGICAL_WIDTH: 250,
+  LOGICAL_HEIGHT: 300
+};
