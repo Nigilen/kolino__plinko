@@ -38,10 +38,10 @@ export const plinkoConfig: PlinkoConfig = {
     fill: '#E17346',
   },
   pin: {
-    posX: 0,
-    posY: 0,
-    radius: 10, 
-    fill: '#000000',
+    posX: 250 / 2,
+    posY: 300 / 2,
+    radius: 5, 
+    fill: '#2F2F2F',
   },
   topCell: {
     posX: 250 / 2,

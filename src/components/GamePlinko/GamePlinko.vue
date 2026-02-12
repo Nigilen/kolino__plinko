@@ -1,27 +1,44 @@
 <script lang="ts" setup>
 import { Application, Assets } from 'pixi.js';
-import { onMounted, onUnmounted, ref } from 'vue';
+import { onMounted, onUnmounted, ref, watch } from 'vue';
 import { plinkoConfig } from "@/config/plinkoConfig";
 import { handleResize } from '@/components/GamePlinko/resize';
 import { createWorld } from '@/components/GamePlinko/factories/createWorld';
 import { gameSetup } from '@/components/GamePlinko/setup';
 import { assets } from '@/components/GamePlinko/assets';
+import { startAnimation } from '@/components/GamePlinko/animationBall';
+
+const props = defineProps<{
+  isPlay: boolean;
+}>();
 
 const sceneRef = ref<HTMLDivElement | null>(null);
 let app: Application | null = null; 
 let resizeObserver: ResizeObserver | null = null;
+let anima: () => void;
+
+
+defineExpose({
+  runBall: () => {
+    anima()
+  }
+});
+
 
 onMounted(async () => {
   const scene = sceneRef.value;
   if (!scene) return;
   
   app = new Application();
-  
+
   await Assets.load(assets);
   await gameSetup(app, scene);
-  const world = await createWorld();
+  const { world, ball } = await createWorld();
+
+  anima = () => startAnimation(app as Application, ball);
 
   app.stage.addChild(world);
+  
 
   const updSize = () => {
     if (!scene || !app) return;
