@@ -5,12 +5,17 @@ import GameModal from '@/components/GameModal.vue';
 import { mainConfig } from '@/config/mainConfig';
 import GamePlinko from '@/components/GamePlinko/GamePlinko.vue';
 
+
+const gamePlinkoRef = ref<InstanceType<typeof GamePlinko> | null>(null);
+
 const isOpenModal = ref(false);
-const isSpin = ref(false);
+const isPlay = ref(false);
 const winValue = ref();
 
-const handleSpinStart = () => {
-  isSpin.value = true;
+const handlePlay = () => {
+  if (!gamePlinkoRef.value) return;
+  gamePlinkoRef.value.runBall();
+  isPlay.value = true;
 };
 
 const handleOpenModal = (winSector: number) => {
@@ -19,7 +24,6 @@ const handleOpenModal = (winSector: number) => {
 
 const handleCloseModal = () => {
   isOpenModal.value = false;
-  isSpin.value = false;
 };
 
 </script>
@@ -27,7 +31,8 @@ const handleCloseModal = () => {
 <template>
   <main class="main">
     <GameTitle />
-    <GamePlinko />
+    <GamePlinko ref="gamePlinkoRef" :is-play="isPlay" />
+    <button class="button" type="button" @click="handlePlay">Play</button>
   </main>
   <Teleport to="body">
     <Transition>
@@ -45,7 +50,35 @@ const handleCloseModal = () => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  row-gap: min(100px, 12vmax);
+  justify-content: center;
+  row-gap: min(30px, 10vmax);
+  block-size: 100%;
+}
+
+.button {
+  background-color: var(--accent-color);
+  padding: 10px 20px;
+  border-radius: 5px;
+  font-size: 1.2rem;
+  cursor: pointer;
+  color: var(--secondary-color);
+  transition: transform 0.3s ease-in-out;
+
+  &:hover {
+    transform: scale(1.1);
+  }
+  &:active {
+    transform: scale(0.9);
+  }
+  &:focus {
+    outline: none;
+  }
+  &:focus-visible {
+    outline: 2px solid var(--primary-color);
+  }
+  &:disabled {
+    background-color: var(--primary-color);
+  }
 }
 
 </style>

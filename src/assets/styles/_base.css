@@ -13,16 +13,13 @@ body {
   font-family: var(--font-family);
   background-color: var(--secondary-color);
   color: var(--primary-color);
+  padding-block: 10dvh;
+  block-size: 100dvh;
 }
 
 #app {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
   inline-size: 100%;
-  block-size: 100dvh;
-  overflow: hidden;
+  block-size: 100%;
 }
 
 button {

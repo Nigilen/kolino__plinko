@@ -1,37 +1,60 @@
 <script lang="ts" setup>
-import { Application } from 'pixi.js';
-import { onMounted, onUnmounted, ref } from 'vue';
-import { handleResize } from '@/components/GamePlinko/resize';
-import { gameSetup } from './setup';
+import { Application, Assets } from 'pixi.js';
+import { onMounted, onUnmounted, ref, watch } from 'vue';
 import { plinkoConfig } from "@/config/plinkoConfig";
+import { handleResize } from '@/components/GamePlinko/resize';
+import { createWorld } from '@/components/GamePlinko/factories/createWorld';
+import { gameSetup } from '@/components/GamePlinko/setup';
+import { assets } from '@/components/GamePlinko/assets';
+import { startAnimation } from '@/components/GamePlinko/animationBall';
 
+const props = defineProps<{
+  isPlay: boolean;
+}>();
 
 const sceneRef = ref<HTMLDivElement | null>(null);
 let app: Application | null = null; 
 let resizeObserver: ResizeObserver | null = null;
+let anima: () => void;
+
+
+defineExpose({
+  runBall: () => {
+    anima()
+  }
+});
+
 
 onMounted(async () => {
   const scene = sceneRef.value;
   if (!scene) return;
-
-  app = new Application();
   
-  await gameSetup(app, scene);
+  app = new Application();
 
-  handleResize(
-    app, 
-    scene.offsetWidth, scene.offsetHeight, 
-    plinkoConfig.scene.logicalWidth, plinkoConfig.scene.logicalHeight
-  );
-  resizeObserver = new ResizeObserver(() => {
-    if (app) {
-      handleResize(
-        app, 
-        scene.offsetWidth, scene.offsetHeight, 
-        plinkoConfig.scene.logicalWidth, plinkoConfig.scene.logicalHeight
-      );
-    };
-  });
+  await Assets.load(assets);
+  await gameSetup(app, scene);
+  const { world, ball } = await createWorld();
+
+  anima = () => startAnimation(app as Application, ball);
+
+  app.stage.addChild(world);
+  
+
+  const updSize = () => {
+    if (!scene || !app) return;
+
+    const sceneWidth = scene.clientWidth;
+    if (sceneWidth <= 0) return;
+    const sceneHeight = sceneWidth / plinkoConfig.scene.aspectRatio;
+
+    handleResize(
+      app, 
+      sceneWidth, sceneHeight,
+      plinkoConfig.scene.logicalWidth, plinkoConfig.scene.logicalHeight
+    );
+  };
+  updSize();
+  resizeObserver = new ResizeObserver(updSize);
   resizeObserver.observe(scene);
 });
 
@@ -50,9 +73,11 @@ onUnmounted(() => {
 <style lang="css" scoped>
 .scene {
   display: flex;
-  inline-size: min(250px, 90vmin);
-  block-size: 100%;
+  inline-size: min(400px, 50vmin);
   aspect-ratio: 5 / 6;
-  outline: 2px solid tomato;
+
+  @media (orientation: portrait) {
+    inline-size: min(400px, 90vmin);
+  }
 }
 </style>
