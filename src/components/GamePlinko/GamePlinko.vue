@@ -52,8 +52,12 @@ onUnmounted(() => {
 <style lang="css" scoped>
 .scene {
   display: flex;
-  inline-size: min(250px, 90vmin);
+  inline-size: min(400px, 50vmin);
   aspect-ratio: 5 / 6;
   outline: 2px solid tomato;
+
+  @media (orientation: portrait) {
+    inline-size: min(400px, 90vmin);
+  }
 }
 </style>
