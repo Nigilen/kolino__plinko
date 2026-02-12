@@ -5,10 +5,10 @@ import { handleResize } from '@/components/GamePlinko/resize';
 import { gameSetup } from './setup';
 import { plinkoConfig } from "@/config/plinkoConfig";
 
-
 const sceneRef = ref<HTMLDivElement | null>(null);
 let app: Application | null = null; 
 let resizeObserver: ResizeObserver | null = null;
+
 
 onMounted(async () => {
   const scene = sceneRef.value;
@@ -18,20 +18,22 @@ onMounted(async () => {
   
   await gameSetup(app, scene);
 
-  handleResize(
-    app, 
-    scene.offsetWidth, scene.offsetHeight, 
-    plinkoConfig.scene.logicalWidth, plinkoConfig.scene.logicalHeight
-  );
-  resizeObserver = new ResizeObserver(() => {
-    if (app) {
-      handleResize(
-        app, 
-        scene.offsetWidth, scene.offsetHeight, 
-        plinkoConfig.scene.logicalWidth, plinkoConfig.scene.logicalHeight
-      );
-    };
-  });
+  const updSize = () => {
+    if (!scene || !app) return;
+
+    const sceneWidth = scene.clientWidth;
+    if (sceneWidth <= 0) return;
+    const sceneHeight = sceneWidth / plinkoConfig.scene.aspectRatio;
+
+    handleResize(
+      app, 
+      sceneWidth, sceneHeight,
+      plinkoConfig.scene.logicalWidth, plinkoConfig.scene.logicalHeight
+    );
+  };
+
+  updSize();
+  resizeObserver = new ResizeObserver(updSize);
   resizeObserver.observe(scene);
 });
 
@@ -51,8 +53,6 @@ onUnmounted(() => {
 .scene {
   display: flex;
   inline-size: min(250px, 90vmin);
-  block-size: auto;
-  margin-block: auto;
   aspect-ratio: 5 / 6;
   outline: 2px solid tomato;
 }
