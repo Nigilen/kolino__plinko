@@ -51,7 +51,8 @@ onUnmounted(() => {
 .scene {
   display: flex;
   inline-size: min(250px, 90vmin);
-  block-size: 100%;
+  block-size: auto;
+  margin-block: auto;
   aspect-ratio: 5 / 6;
   outline: 2px solid tomato;
 }

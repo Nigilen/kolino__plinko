@@ -45,7 +45,8 @@ const handleCloseModal = () => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  row-gap: min(100px, 12vmax);
+  row-gap: min(50px, 12vmax);
+  block-size: 100%;
 }
 
 </style>

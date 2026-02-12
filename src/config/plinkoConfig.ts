@@ -25,8 +25,8 @@ interface PlinkoConfig {
 
 export const plinkoConfig: PlinkoConfig = {
   scene: {
-    logicalWidth: 400,
-    logicalHeight: 250
+    logicalWidth: 250,
+    logicalHeight: 300
   },
   topCell: {
     width: 100,
