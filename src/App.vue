@@ -28,6 +28,7 @@ const handleCloseModal = () => {
   <main class="main">
     <GameTitle />
     <GamePlinko />
+    <button class="button" type="button">Play</button>
   </main>
   <Teleport to="body">
     <Transition>
@@ -48,6 +49,32 @@ const handleCloseModal = () => {
   justify-content: center;
   row-gap: min(50px, 12vmax);
   block-size: 100%;
+}
+
+.button {
+  background-color: var(--accent-color);
+  padding: 10px 20px;
+  border-radius: 5px;
+  font-size: 1.2rem;
+  cursor: pointer;
+  color: var(--secondary-color);
+  transition: transform 0.3s ease-in-out;
+
+  &:hover {
+    transform: scale(1.1);
+  }
+  &:active {
+    transform: scale(0.9);
+  }
+  &:focus {
+    outline: none;
+  }
+  &:focus-visible {
+    outline: 2px solid var(--primary-color);
+  }
+  &:disabled {
+    background-color: var(--primary-color);
+  }
 }
 
 </style>
