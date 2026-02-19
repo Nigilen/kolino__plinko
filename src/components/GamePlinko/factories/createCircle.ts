@@ -9,12 +9,11 @@ interface CircleProps {
 
 export const createCircle = async (config: CircleProps) => {
   const container = new Container();
-  const hole = new Graphics();
-  hole.circle(config.posX, config.posY, config.radius);
-  hole.fill(config.fill);
-  hole.pivot.set(0.5);
+  const circle = new Graphics();
+  circle.circle(config.posX, config.posY, config.radius);
+  circle.fill(config.fill);
+  circle.pivot.set(0.5);
 
-  container.addChild(hole);
-
-  return container;
+  container.addChild(circle);
+  return { container };
 }

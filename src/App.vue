@@ -5,20 +5,18 @@ import GameModal from '@/components/GameModal.vue';
 import { mainConfig } from '@/config/mainConfig';
 import GamePlinko from '@/components/GamePlinko/GamePlinko.vue';
 
-
-const gamePlinkoRef = ref<InstanceType<typeof GamePlinko> | null>(null);
+const gameRef = ref<InstanceType<typeof GamePlinko> | null>(null);
 
 const isOpenModal = ref(false);
 const isPlay = ref(false);
-const winValue = ref();
 
 const handlePlay = () => {
-  if (!gamePlinkoRef.value) return;
-  gamePlinkoRef.value.runBall();
+  if (!gameRef.value) return;
+  gameRef.value.runBall();
   isPlay.value = true;
 };
 
-const handleOpenModal = (winSector: number) => {
+const handleOpenModal = () => {
   isOpenModal.value = true;
 };
 
@@ -31,13 +29,13 @@ const handleCloseModal = () => {
 <template>
   <main class="main">
     <GameTitle />
-    <GamePlinko ref="gamePlinkoRef" :is-play="isPlay" />
+    <GamePlinko ref="gameRef" />
     <button class="button" type="button" @click="handlePlay">Play</button>
   </main>
   <Teleport to="body">
     <Transition>
       <GameModal 
-        v-if="isOpenModal" 
+        v-model="isOpenModal"
         :winValue="mainConfig.modal.bonus" 
         @modalClose="handleCloseModal" 
       />

@@ -1,6 +1,6 @@
 import { Application } from "pixi.js";
 
-export const gameSetup = async (app: Application, scene: HTMLDivElement) => {
+export const setupGame = async (app: Application, scene: HTMLDivElement) => {
   await app.init({
     width: scene.offsetWidth,
     height: scene.offsetHeight,

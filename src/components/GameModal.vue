@@ -1,30 +1,52 @@
 <script lang="ts" setup>
 import { mainConfig } from '@/config/mainConfig';
+import { onMounted, onUnmounted } from 'vue';
 
 const props = defineProps<{
+  modelValue: boolean;
   winValue: number | string;
 }>();
 
 const emits = defineEmits<{
-  (e: 'modalClose'): void;
+  (e: 'update:modelValue', value: boolean): void
 }>();
 
 const handleModalClose = () => {
-  emits('modalClose');
+  emits('update:modelValue', false);
 };
+
+const handleKeyDown = (e: KeyboardEvent) => {
+  if (e.key === 'Escape') {
+    handleModalClose();
+  }
+};
+
+onMounted(() => {
+  window.addEventListener('keydown', handleKeyDown);
+});
+
+onUnmounted(() => {
+  window.removeEventListener('keydown', handleKeyDown);
+});
 
 </script>
 
 <template>
-
-  <section class="modal">
-    <div class="modal__content">
-      <h2 class="modal__title">{{ mainConfig.modal.title }}</h2>
-      <p class="modal__bonuse">{{ props.winValue }}</p>
-      <button class="modal__button" type="button" @click="handleModalClose">{{ mainConfig.modal.button }}</button>
-    </div>
-  </section>
-
+  <Transition>
+    <section class="modal" v-if="props.modelValue" @click.self="handleModalClose">
+      <div class="modal__content">
+        <h2 class="modal__title">
+          {{ mainConfig.modal.title }}
+        </h2>
+        <p class="modal__bonuse">
+          {{ props.winValue }}
+        </p>
+        <button class="modal__button" type="button" @click="handleModalClose">
+          {{ mainConfig.modal.button }}
+        </button>
+      </div>
+    </section>
+  </Transition>
 </template>
 
 <style lang="css" scoped>
@@ -79,19 +101,23 @@ const handleModalClose = () => {
   }
 }
 
-.v-enter-active, .v-leave-active {
+.v-enter-active, 
+.v-leave-active {
   transition: opacity 0.5s ease;
 }
 
-.v-enter-from, .v-leave-to {
+.v-enter-from, 
+.v-leave-to {
   opacity: 0;
 }
 
-.v-enter-active .modal__content, .v-leave-active .modal__content {
+.v-enter-active .modal__content, 
+.v-leave-active .modal__content {
   transition: transform 0.5s cubic-bezier(.82,.12,.39,2.75);
 }
 
-.v-enter-from .modal__content, .v-leave-to .modal__content {
+.v-enter-from .modal__content, 
+.v-leave-to .modal__content {
   transform: scale(0);
 }
 
