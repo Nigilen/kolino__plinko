@@ -1,60 +1,46 @@
 <script lang="ts" setup>
 import { Application, Assets } from 'pixi.js';
-import { onMounted, onUnmounted, ref, watch } from 'vue';
+import { onMounted, onUnmounted, ref } from 'vue';
 import { plinkoConfig } from "@/config/plinkoConfig";
-import { handleResize } from '@/components/GamePlinko/resize';
+import { resizeGame } from '@/components/GamePlinko/resize';
 import { createWorld } from '@/components/GamePlinko/factories/createWorld';
-import { gameSetup } from '@/components/GamePlinko/setup';
+import { setupGame } from '@/components/GamePlinko/setup';
 import { assets } from '@/components/GamePlinko/assets';
-import { startAnimation } from '@/components/GamePlinko/animationBall';
-
-const props = defineProps<{
-  isPlay: boolean;
-}>();
+import { dropBall } from '@/components/GamePlinko/dropBall';
 
 const sceneRef = ref<HTMLDivElement | null>(null);
 let app: Application | null = null; 
 let resizeObserver: ResizeObserver | null = null;
-let anima: () => void;
+let handleDropBall: () => void;
+let handleResize: () => void;
 
-
-defineExpose({
-  runBall: () => {
-    anima()
-  }
-});
-
+defineExpose<{
+  runBall: () => void;
+}>({
+    runBall: () => handleDropBall(),
+  });
 
 onMounted(async () => {
-  const scene = sceneRef.value;
-  if (!scene) return;
-  
   app = new Application();
+  if (!sceneRef.value) return;
+
+  const scene: HTMLDivElement = sceneRef.value;
+  const logicalWidth: number = plinkoConfig.scene.logicalWidth;
+  const logicalHeight: number = plinkoConfig.scene.logicalHeight;
 
   await Assets.load(assets);
-  await gameSetup(app, scene);
+  await setupGame(app, scene);
+
   const { world, ball } = await createWorld();
 
-  anima = () => startAnimation(app as Application, ball);
-
   app.stage.addChild(world);
+
   
+  handleDropBall = () => dropBall(app, ball);
+  handleResize = () => resizeGame(app, scene.clientWidth, scene.clientHeight, logicalWidth, logicalHeight);
 
-  const updSize = () => {
-    if (!scene || !app) return;
-
-    const sceneWidth = scene.clientWidth;
-    if (sceneWidth <= 0) return;
-    const sceneHeight = sceneWidth / plinkoConfig.scene.aspectRatio;
-
-    handleResize(
-      app, 
-      sceneWidth, sceneHeight,
-      plinkoConfig.scene.logicalWidth, plinkoConfig.scene.logicalHeight
-    );
-  };
-  updSize();
-  resizeObserver = new ResizeObserver(updSize);
+  handleResize();
+  resizeObserver = new ResizeObserver(() => handleResize());
   resizeObserver.observe(scene);
 });
 
@@ -67,17 +53,29 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div ref="sceneRef" class="scene"></div>
+  <div class="wrapper">
+    <div ref="sceneRef" class="scene"></div>
+  </div>
 </template>
 
 <style lang="css" scoped>
-.scene {
+.wrapper {
+  position: relative;
   display: flex;
   inline-size: min(400px, 50vmin);
+  block-size: auto;
   aspect-ratio: 5 / 6;
 
   @media (orientation: portrait) {
     inline-size: min(400px, 90vmin);
   }
+}
+
+.scene { 
+  outline: 3px dashed rgb(50, 148, 210);
+
+  position: absolute;
+  inline-size: 100%;
+  block-size: 100%;
 }
 </style>
