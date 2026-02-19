@@ -59,7 +59,6 @@ export const dropBall = (app: Application | null, ball: Container) => {
     
     config.velocity.y += config.gravity * ticker.deltaTime;
     config.velocity.x *= config.friction;
-
     ball.position.y += config.velocity.y * ticker.deltaTime;
     ball.position.x += config.velocity.x * ticker.deltaTime;
 
@@ -69,7 +68,7 @@ export const dropBall = (app: Application | null, ball: Container) => {
       }
     });
 
-    if (Math.abs(config.velocity.y) < config.gravity && Math.abs(config.velocity.x) < config.gravity) {
+    if (Math.abs(config.velocity.y) < config.gravity && Math.abs(config.velocity.x) < (config.gravity) / 10) {
       app.ticker.remove(animation);
       ball.position.y = 0;
       ball.position.x = 0;
