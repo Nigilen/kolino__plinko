@@ -32,13 +32,13 @@ export const plinkoConfig: PlinkoConfig = {
     aspectRatio: 5/6
   },
   ball: {
-    posX: 250 / 2,
+    posX: 250 / 2 + 6,
     posY: 27,
     radius: 6,
     fill: '#E17346',
   },
   pin: {
-    posX: 250 / 2,
+    posX: 250 / 2 + 5,
     posY: 300 / 2,
     radius: 5, 
     fill: '#2F2F2F',

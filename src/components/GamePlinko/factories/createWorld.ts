@@ -20,6 +20,7 @@ export const createWorld = async () => {
   );
   return { 
     world, 
-    ball 
+    ball,
+    pin
   };
 };
