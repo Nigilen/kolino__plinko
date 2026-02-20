@@ -10,10 +10,10 @@ interface CircleProps {
 export const createCircle = async (config: CircleProps) => {
   const container = new Container();
   const circle = new Graphics();
-  circle.circle(config.posX, config.posY, config.radius);
+  circle.circle(0, 0, config.radius);
   circle.fill(config.fill);
-  circle.pivot.set(0.5);
-
+  circle.pivot.set(config.radius, config.radius);
   container.addChild(circle);
+  container.position.set(config.posX, config.posY);
   return { container };
 }
