@@ -21,8 +21,8 @@ interface Border {
 
 const ballConfig: BallConfig = {
   velocity: { x: 0, y: 0 },
-  gravity: 1, 
-  friction: 0.99,
+  gravity: 0.6, 
+  friction: 0.995,
 };
 
 const pin = {
@@ -39,17 +39,13 @@ const borders: Border[] = [
 export const dropBall = (app: Application | null, ball: Container, pin: Container) => {
   if (!app || !ball) return;
 
-
-
   const checkCollision = (ball: Container, pin: Container, ballRadius: number, border: Border) => {
     if (border.type === "circle") {
       const distanceX = ball.position.x - pin.x;
       const distanceY = ball.position.y - pin.y;
-      
       // Теорема Пифагора: расстояние = √(dx² + dy²)
       const distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
-      
-      return distance < ballRadius + pin.width / 2;
+      return distance < (ballRadius + pin.width / 2);
     }
     
     if (border.type === "wall") {
@@ -70,13 +66,13 @@ export const dropBall = (app: Application | null, ball: Container, pin: Containe
       const distanceY = ball.position.y - pin.y;
       
       // Теорема Пифагора: расстояние = √(dx² + dy²)
-      const distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
+      const distance = Math.sqrt((distanceX * distanceX) + (distanceY * distanceY));
 
       // 2. Находим нормаль (единичный вектор направления)
       const nx = distanceX / distance;
       const ny = distanceY / distance;
 
-      // 3. Выталкиваем шар из объекта (чтобы не застрял)
+      // // 3. Выталкиваем шар из объекта (чтобы не застрял)
       const overlap = (ballRadius + (pin.width / 2)) - distance;
       ball.position.x += nx * overlap;
       ball.position.y += ny * overlap;
@@ -102,8 +98,8 @@ export const dropBall = (app: Application | null, ball: Container, pin: Containe
   };
 
   const resetGame = () => {
-    ball.position.set(0, 0);
-    ballConfig.velocity = { x: 1, y: 0 };
+    ball.position.set(plinkoConfig.ball.posX, plinkoConfig.ball.posY);
+    ballConfig.velocity = { x: 0, y: 0 };
     app.ticker.remove(animation);
   };
 
@@ -115,16 +111,24 @@ export const dropBall = (app: Application | null, ball: Container, pin: Containe
   };
 
   const animation = (ticker: Ticker) => {
-    moveBall(ticker.deltaTime);
-    borders.forEach((border) => {
-      if (checkCollision(ball, pin, 6, border)) {
-        resolveCollision(ball, pin, 6, border);  
-      }
-    });
-    // if (Math.abs(ballConfig.velocity.y) < ballConfig.gravity 
-    //     && Math.abs(ballConfig.velocity.x) < 0.01) {
-    //   resetGame();
-    // }
+
+    const SUB_STEPS = 4;
+    const dt = Math.min(ticker.deltaTime, 2.0) / SUB_STEPS;
+
+    for (let step = 0; step < SUB_STEPS; step++) {
+      moveBall(dt);
+      borders.forEach((border) => {
+        if (checkCollision(ball, pin, 6, border)) {
+          resolveCollision(ball, pin, 6, border);  
+        }
+      });
+    }
+      // Стабилизация покоя
+    if (Math.abs(ballConfig.velocity.y) < 0.1 && Math.abs(ballConfig.velocity.x) < 0.1) {
+      ballConfig.velocity.y = 0;
+      ballConfig.velocity.x = 0;
+      resetGame();
+    }
   };
 
   app.ticker.add(animation);
