@@ -1,4 +1,4 @@
-import { Container, Ticker, type Application } from "pixi.js";
+import { Container, Graphics, Ticker, type Application } from "pixi.js";
 import { plinkoConfig } from "@/config/plinkoConfig";
 
 interface BallConfig {
@@ -19,9 +19,13 @@ interface Border {
   bounce?: number;
 };
 
+// Реальная гравитация: 9.81 м/с²
+// Но в пикселях: допустим, 1 метр = 100 пикселей
+const PIXELS_PER_METER = 100;
+
 const ballConfig: BallConfig = {
-  velocity: { x: 0, y: 0 },
-  gravity: 1, 
+  velocity: { x: 15, y: 0 }, 
+  gravity: 9.8 * PIXELS_PER_METER, 
   friction: 0.99,
 };
 
@@ -38,18 +42,15 @@ const borders: Border[] = [
 
 export const dropBall = (app: Application | null, ball: Container, pin: Container) => {
   if (!app || !ball) return;
+  // Выведите реальные границы шара
 
-
-
-  const checkCollision = (ball: Container, pin: Container, ballRadius: number, border: Border) => {
+  const checkCollision = (ball: Container, pin: Container, ballRadius: number, pinRadius: number, border: Border) => {
     if (border.type === "circle") {
       const distanceX = ball.position.x - pin.x;
       const distanceY = ball.position.y - pin.y;
-      
       // Теорема Пифагора: расстояние = √(dx² + dy²)
       const distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
-      
-      return distance < ballRadius + pin.width / 2;
+      return distance < (ballRadius + pinRadius);
     }
     
     if (border.type === "wall") {
@@ -62,7 +63,7 @@ export const dropBall = (app: Application | null, ball: Container, pin: Containe
     }
   };
 
-  const resolveCollision = (ball: Container, pin: Container, ballRadius: number, border: Border) => {
+  const resolveCollision = (ball: Container, pin: Container, ballRadius: number, pinRadius: number, border: Border) => {
 
     if (border.type === "circle") {
       // 1. Находим вектор между центрами
@@ -70,14 +71,14 @@ export const dropBall = (app: Application | null, ball: Container, pin: Containe
       const distanceY = ball.position.y - pin.y;
       
       // Теорема Пифагора: расстояние = √(dx² + dy²)
-      const distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
+      const distance = Math.sqrt((distanceX * distanceX) + (distanceY * distanceY));
 
       // 2. Находим нормаль (единичный вектор направления)
       const nx = distanceX / distance;
       const ny = distanceY / distance;
 
-      // 3. Выталкиваем шар из объекта (чтобы не застрял)
-      const overlap = (ballRadius + (pin.width / 2)) - distance;
+      // // 3. Выталкиваем шар из объекта (чтобы не застрял)
+      const overlap = (ballRadius + (pinRadius)) - distance;
       ball.position.x += nx * overlap;
       ball.position.y += ny * overlap;
 
@@ -102,8 +103,8 @@ export const dropBall = (app: Application | null, ball: Container, pin: Containe
   };
 
   const resetGame = () => {
-    ball.position.set(0, 0);
-    ballConfig.velocity = { x: 1, y: 0 };
+    ball.position.set(plinkoConfig.ball.posX, plinkoConfig.ball.posY);
+    ballConfig.velocity = { x: 0, y: 0 };
     app.ticker.remove(animation);
   };
 
@@ -114,17 +115,62 @@ export const dropBall = (app: Application | null, ball: Container, pin: Containe
     ball.position.x += ballConfig.velocity.x * dt;
   };
 
-  const animation = (ticker: Ticker) => {
-    moveBall(ticker.deltaTime);
-    borders.forEach((border) => {
-      if (checkCollision(ball, pin, 6, border)) {
-        resolveCollision(ball, pin, 6, border);  
-      }
+  
+  let accumulator = 0;
+  const PHYSYCS_STEP = 1 / 60;
+
+
+  const getRadius = (container: Container): number => {
+    const bounds = container.getLocalBounds();
+    // Ширина/2 — это радиус. 
+    // Важно: getBounds() учитывает масштаб и pivot!
+    return bounds.width / 2;
+  };
+  // Добавьте эту функцию для отладки
+  const drawDebugCollision = (app: Application, ball: Container, pin: Container) => {
+    const debug = new Graphics();
+    app.stage.addChild(debug);
+    
+    app.ticker.add(() => {
+      debug.clear();
+      
+      const ballRadius = getRadius(ball);
+      const pinRadius = getRadius(pin);
+      const ballPos = ball.position;
+      const pinPos = pin.position;
+      
+      // Рисуем физические границы (красным)
+      debug.circle(ballPos.x, ballPos.y, ballRadius);
+      debug.stroke({ width: 1, color: 'red', alpha: 0.5 });
+      
+      debug.circle(pinPos.x, pinPos.y, pinRadius);
+      debug.stroke({ width: 1, color: 'red', alpha: 0.5 });
+      
+      // Рисуем линию между центрами (для наглядности)
+      debug.moveTo(ballPos.x, ballPos.y);
+      debug.lineTo(pinPos.x, pinPos.y);
+      debug.stroke({ width: 1, color: 'green', alpha: 0.3 });
     });
-    // if (Math.abs(ballConfig.velocity.y) < ballConfig.gravity 
-    //     && Math.abs(ballConfig.velocity.x) < 0.01) {
-    //   resetGame();
-    // }
+  };
+
+  const animation = (ticker: Ticker) => {
+    const ballRadius = getRadius(ball);
+    const pinRadius = getRadius(pin);
+
+    // drawDebugCollision(app, ball, pin)
+    const dt = ticker.elapsedMS / 1000;
+    accumulator += dt;
+    
+    while (accumulator >= PHYSYCS_STEP) {
+      moveBall(PHYSYCS_STEP);
+      
+      borders.forEach((border) => {
+        if (checkCollision(ball, pin, ballRadius, pinRadius, border)) {
+          resolveCollision(ball, pin, ballRadius, pinRadius, border);  
+        }
+      });
+      accumulator -= PHYSYCS_STEP;
+    }
   };
 
   app.ticker.add(animation);
