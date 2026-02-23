@@ -13,6 +13,7 @@ export const createCircle = async (config: CircleProps) => {
   circle.circle(0, 0, config.radius);
   circle.fill(config.fill);
   circle.pivot.set(0.5);
+  
   container.addChild(circle);
   container.position.set(config.posX, config.posY);
   return { container };

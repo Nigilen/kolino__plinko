@@ -1,140 +1,75 @@
 import { Container, Ticker, type Application } from "pixi.js";
 import { plinkoConfig } from "@/config/plinkoConfig";
+import { getRadius } from "./utils/getRadius";
+import type { Config } from "./types";
+import { checkCollision } from "./utils/checkCollision";
+import { resolveCollision } from "./utils/resolveCollision";
+import { onBallCaught } from "./utils/onBallCaught";
+import { moveBall } from "./utils/moveBall";
 
-interface BallConfig {
-  velocity: { x: number; y: number; };
-  gravity: number;
-  friction: number;
+
+const config: Config = {
+  ball: {
+    velocity: { x: -1.6, y: 0 }, 
+    gravity: 9.8 * 100,
+    friction: 0.99,
+  },
+  obstacles: [
+    { type: 'wall', axis: "y", value: 300, direction: 1, bounce: 0.8  },
+    { type: 'wall', axis: "x", value: 250, direction: 1, bounce: 0.8  },
+    { type: 'wall', axis: "x", value: 6, direction: -1, bounce: 0.8  },
+    { type: 'circle', x: 0, y: 250, radius: 100, bounce: 1.2 },
+  ]
 };
 
-interface Border {
-  type: "wall" | "circle";
-  axis?: "x" | "y";
-  value?: number;
-  direction?: -1 | 1;
 
-  x?: number;
-  y?: number;
-  radius?: number;
-  bounce?: number;
-};
 
-const PIXELS_PER_METER = 100;
-
-const ballConfig: BallConfig = {
-  velocity: { x: -5, y: 0 }, 
-  gravity: 9.8 * PIXELS_PER_METER, 
-  friction: 0.99,
-};
-
-const borders: Border[] = [
-  { type: 'wall', axis: "y", value: 268, direction: 1, bounce: 0.8  },
-  { type: 'wall', axis: "x", value: 250, direction: 1, bounce: 0.8  },
-  { type: 'wall', axis: "x", value: 12, direction: -1, bounce: 0.8  },
-  { type: 'circle', x: 0, y: 250, radius: 100, bounce: 1.2 },
-];
-
-export const dropBall = (app: Application | null, ball: Container, pin: Container) => {
+export const dropBall = (app: Application | null, ball: Container, pin: Container, bottomCell: Container) => {
   if (!app || !ball) return;
 
-  const checkCollision = (
-    ball: Container, 
-    pin: Container, 
-    ballRadius: number, 
-    pinRadius: number, 
-    border: Border
-  ) => {
-    if (border.type === "circle") {
-      const distanceX = ball.position.x - pin.x;
-      const distanceY = ball.position.y - pin.y;
-      const distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
-      return distance < (ballRadius + pinRadius);
-    }
-    
-    if (border.type === "wall") {
-      const currentPos = border.axis === "x" ? ball.position.x : ball.position.y;
-      if (border.direction === 1) {
-        return currentPos > border.value!;
-      } else {
-        return currentPos < border.value!;
-      }
-    }
-  };
+  const ballRadius = getRadius(ball);
+  const pinRadius = getRadius(pin);
 
-  const resolveCollision = (
-    ball: Container, 
-    pin: Container, 
-    ballRadius: number, 
-    pinRadius: number, 
-    border: Border
-  ) => {
-
-    if (border.type === "circle") {
-      const distanceX = ball.position.x - pin.x;
-      const distanceY = ball.position.y - pin.y;
-      
-      const distance = Math.sqrt((distanceX * distanceX) + (distanceY * distanceY));
-
-      const nx = distanceX / distance;
-      const ny = distanceY / distance;
-
-      const overlap = (ballRadius + (pinRadius)) - distance;
-      ball.position.x += nx * overlap;
-      ball.position.y += ny * overlap;
-
-      const dotProduct = ballConfig.velocity.x * nx + ballConfig.velocity.y * ny;
-      ballConfig.velocity.x = (ballConfig.velocity.x - 2 * dotProduct * nx) * (border.bounce || 1);
-      ballConfig.velocity.y = (ballConfig.velocity.y - 2 * dotProduct * ny) * (border.bounce || 1);
-
-    } else if (border.type === "wall") {
-      if (border.axis === "y") { 
-        ball.position.y = border.value!;
-        ballConfig.velocity.y = -ballConfig.velocity.y * border.bounce!;
-      } 
-      else if (border.axis === "x") { 
-        ball.position.x = border.value!;
-        ballConfig.velocity.x = -ballConfig.velocity.x * border.bounce!;
-      }
-    }
-  };
-
-  const resetGame = () => {
-    ball.position.set(plinkoConfig.ball.posX, plinkoConfig.ball.posY);
-    ballConfig.velocity = { x: 0, y: 0 };
-    app.ticker.remove(animation);
-  };
-
-  const moveBall = (dt: number) => {
-    ballConfig.velocity.y += ballConfig.gravity * dt;
-    ballConfig.velocity.x *= ballConfig.friction;
-    ball.position.y += ballConfig.velocity.y * dt;
-    ball.position.x += ballConfig.velocity.x * dt;
-  };
+  const cellBounds = bottomCell.getBounds();
+  const cellLeftBorder = cellBounds.x;
+  const cellRightBorder = cellBounds.x + cellBounds.width;
+  const cellTopBorder = cellBounds.y;
+  const cellBottomBorder = cellBounds.y + cellBounds.height;
+  
+  let isCaught = false;
+  const wallThickness = 1;  
   
   let accumulator = 0;
-  const PHYSYCS_STEP = 1 / 60;
-
-  const getRadius = (container: Container): number => {
-    const bounds = container.getLocalBounds();
-    return bounds.width / 2;
-  };
-
+  const physycsTimeStep = 1 / 60;
+  
   const animation = (ticker: Ticker) => {
-    const ballRadius = getRadius(ball);
-    const pinRadius = getRadius(pin);
-
-    const dt = ticker.elapsedMS / 1000;
-    accumulator += dt;
     
-    while (accumulator >= PHYSYCS_STEP) {
-      moveBall(PHYSYCS_STEP);
+    const deltaTime = ticker.elapsedMS / 1000;
+    accumulator += deltaTime;
+    
+    while (accumulator >= physycsTimeStep) {
+      const prevY = ball.position.y;
       
-      borders.forEach((border) => {
-        if (checkCollision(ball, pin, ballRadius, pinRadius, border)) {
-          resolveCollision(ball, pin, ballRadius, pinRadius, border);  
+      moveBall(physycsTimeStep, config, ball);
+      
+      if (!isCaught) {
+        const ballPos = ball.getGlobalPosition();
+        const isInsideX = ballPos.x > cellLeftBorder + 5 && ballPos.x < cellRightBorder - 5;
+        const crossedTop = prevY < cellTopBorder && ballPos.y >= cellTopBorder;
+        const isMovingDown = config.ball.velocity.y > 0;
+
+        if (isInsideX && crossedTop && isMovingDown) {
+          onBallCaught(bottomCell, isCaught, wallThickness, config);
+        };
+      }
+      
+      config.obstacles.forEach((obstacle) => {
+        if (checkCollision(ball, obstacle, pin.x, pin.y, ballRadius, pinRadius)) {
+          resolveCollision(ball, obstacle, config, pin.x, pin.y, ballRadius, pinRadius);  
         }
       });
-      accumulator -= PHYSYCS_STEP;
+
+      accumulator -= physycsTimeStep;
     }
   };
 

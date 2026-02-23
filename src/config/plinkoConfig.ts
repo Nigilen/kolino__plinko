@@ -56,5 +56,5 @@ export const plinkoConfig: PlinkoConfig = {
     width: 30,
     height: 33,
     imageAlias: 'skull'
-  },
+  }
 } as const;
