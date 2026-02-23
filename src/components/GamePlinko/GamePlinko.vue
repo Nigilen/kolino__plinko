@@ -35,6 +35,7 @@ onMounted(async () => {
 
   app.stage.addChild(world);
 
+  
   handleDropBall = () => dropBall(app, ball, pin, bottomCell);
   handleResize = () => resizeGame(app, scene.clientWidth, scene.clientHeight, logicalWidth, logicalHeight);
 
