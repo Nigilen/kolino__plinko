@@ -11,6 +11,7 @@ export const createWorld = async () => {
   const { container: topCell } = await createCell(plinkoConfig.topCell);
   const { container: bottomCell, image: bottomCellImage } = await createCell(plinkoConfig.bottomCell);
   bottomCellImage.rotation = Math.PI;
+  bottomCellImage.rotation = Math.PI;
   
   world.addChild(
     ball,
@@ -21,6 +22,7 @@ export const createWorld = async () => {
   return { 
     world, 
     ball,
-    pin
+    pin,
+    bottomCell,
   };
 };
