@@ -9,7 +9,7 @@ import { moveBall } from "./utils/moveBall";
 
 const config: Config = {
   ball: {
-    velocity: { x: -1.6, y: 0 }, 
+    velocity: { x: 3.6, y: 0 }, 
     gravity: 9.8 * 100,
     friction: 0.99,
   },
@@ -26,22 +26,17 @@ const config: Config = {
 export const dropBall = (app: Application | null, ball: Container, pin: Container, bottomCell: Container) => {
   if (!app || !ball) return;
 
-  const ballRadius = 6;
-  const pinRadius = 5;
-
-  const cellLeftBorder = 110;
-  const cellRightBorder = 130;
+  const cellLeftBorder = bottomCell.x - bottomCell.width / 2;
+  const cellRightBorder = bottomCell.x + bottomCell.width / 2;
   const cellTopBorder = bottomCell.y;
   const cellBottomBorder = bottomCell.y + bottomCell.height;
 
-  
-  
   let isCaught = false;
-  const wallThickness = 1;  
+  const wallThickness = 5;  
   
   let accumulator = 0;
   const physycsTimeStep = 1 / 60;
-  
+
   const animation = (ticker: Ticker) => {
     
     const deltaTime = ticker.elapsedMS / 1000;
@@ -56,8 +51,8 @@ export const dropBall = (app: Application | null, ball: Container, pin: Containe
         const ballX = ball.position.x;
         const ballY = ball.position.y;
 
-        const entranceMinX = cellLeftBorder + wallThickness;
-        const entranceMaxX = cellRightBorder - wallThickness;
+        const entranceMinX = cellLeftBorder + 10;
+        const entranceMaxX = cellRightBorder - 10;
 
         const isInsideX = ballX > entranceMinX && ballX < entranceMaxX;
         const crossedTop = prevY < cellTopBorder && ballY >= cellTopBorder;
@@ -74,8 +69,8 @@ export const dropBall = (app: Application | null, ball: Container, pin: Containe
       }
       
       config.obstacles.forEach((obstacle) => {
-        if (checkCollision(ball, obstacle, pin.position.x, pin.position.y, ballRadius, pinRadius)) {
-          resolveCollision(ball, obstacle, config, pin.position.x, pin.position.y, ballRadius, pinRadius);  
+        if (checkCollision(ball, obstacle, pin.position.x, pin.position.y, plinkoConfig.ball.radius, plinkoConfig.pin.radius)) {
+          resolveCollision(ball, obstacle, config, pin.position.x, pin.position.y, plinkoConfig.ball.radius, plinkoConfig.pin.radius);  
         }
       });
 

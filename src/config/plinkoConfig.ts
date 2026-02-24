@@ -51,8 +51,8 @@ export const plinkoConfig: PlinkoConfig = {
     imageAlias: 'skull'
   },
   bottomCell: {
-    posX: 250 / 2,
-    posY: 300 - 30,
+    posX: 0 + 30 / 2,
+    posY: 300 - 33,
     width: 30,
     height: 33,
     imageAlias: 'skullBottom'
