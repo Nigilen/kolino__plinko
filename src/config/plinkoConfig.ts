@@ -52,9 +52,9 @@ export const plinkoConfig: PlinkoConfig = {
   },
   bottomCell: {
     posX: 250 / 2,
-    posY: 300,
+    posY: 300 - 30,
     width: 30,
     height: 33,
-    imageAlias: 'skull'
+    imageAlias: 'skullBottom'
   }
 } as const;

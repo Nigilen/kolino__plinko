@@ -1,6 +1,5 @@
 import { Container, Ticker, type Application } from "pixi.js";
 import { plinkoConfig } from "@/config/plinkoConfig";
-import { getRadius } from "./utils/getRadius";
 import type { Config } from "./types";
 import { checkCollision } from "./utils/checkCollision";
 import { resolveCollision } from "./utils/resolveCollision";
@@ -27,14 +26,15 @@ const config: Config = {
 export const dropBall = (app: Application | null, ball: Container, pin: Container, bottomCell: Container) => {
   if (!app || !ball) return;
 
-  const ballRadius = getRadius(ball);
-  const pinRadius = getRadius(pin);
+  const ballRadius = 6;
+  const pinRadius = 5;
 
-  const cellBounds = bottomCell.getBounds();
-  const cellLeftBorder = cellBounds.x;
-  const cellRightBorder = cellBounds.x + cellBounds.width;
-  const cellTopBorder = cellBounds.y;
-  const cellBottomBorder = cellBounds.y + cellBounds.height;
+  const cellLeftBorder = 110;
+  const cellRightBorder = 130;
+  const cellTopBorder = bottomCell.y;
+  const cellBottomBorder = bottomCell.y + bottomCell.height;
+
+  
   
   let isCaught = false;
   const wallThickness = 1;  
@@ -53,19 +53,29 @@ export const dropBall = (app: Application | null, ball: Container, pin: Containe
       moveBall(physycsTimeStep, config, ball);
       
       if (!isCaught) {
-        const ballPos = ball.getGlobalPosition();
-        const isInsideX = ballPos.x > cellLeftBorder + 5 && ballPos.x < cellRightBorder - 5;
-        const crossedTop = prevY < cellTopBorder && ballPos.y >= cellTopBorder;
+        const ballX = ball.position.x;
+        const ballY = ball.position.y;
+
+        const entranceMinX = cellLeftBorder + wallThickness;
+        const entranceMaxX = cellRightBorder - wallThickness;
+
+        const isInsideX = ballX > entranceMinX && ballX < entranceMaxX;
+        const crossedTop = prevY < cellTopBorder && ballY >= cellTopBorder;
         const isMovingDown = config.ball.velocity.y > 0;
 
         if (isInsideX && crossedTop && isMovingDown) {
-          onBallCaught(bottomCell, isCaught, wallThickness, config);
+          isCaught = true;
+          onBallCaught(
+            { minX: cellLeftBorder, maxX: cellRightBorder, minY: cellTopBorder, maxY: cellBottomBorder },
+            wallThickness,
+            config
+          );
         };
       }
       
       config.obstacles.forEach((obstacle) => {
-        if (checkCollision(ball, obstacle, pin.x, pin.y, ballRadius, pinRadius)) {
-          resolveCollision(ball, obstacle, config, pin.x, pin.y, ballRadius, pinRadius);  
+        if (checkCollision(ball, obstacle, pin.position.x, pin.position.y, ballRadius, pinRadius)) {
+          resolveCollision(ball, obstacle, config, pin.position.x, pin.position.y, ballRadius, pinRadius);  
         }
       });
 
