@@ -1,16 +1,46 @@
 interface CellProps {
-  posX: number;
-  posY: number;
   width: number;
   height: number;
   imageAlias: string;
+  multiplier?: number;
 };
 
-interface CircleProps {
-  posX: number;
+interface CellPosition extends CellProps {
+  posX: number; // Явно указываем позицию для каждой ячейки
   posY: number;
+};
+
+export interface BallAnimationProps {
+  velocity: { x: number; y: number };
+  gravity: number;
+  friction: number;
+  bounce: number;
+};
+
+export interface BallsProps {
+  paint: {
+    radius: number;
+    fill: string;
+  };
+  spawn: {
+    posX: number;
+    posY: number;
+  }
+  animation: BallAnimationProps
+};
+
+export interface PinProps {
   radius: number;
   fill: string;
+  bounce: number;
+};
+
+export interface WallProps {
+  type: 'wall';
+  axis: 'x' | 'y';
+  value: number;
+  direction: 1 | -1; 
+  bounce: number;
 };
 
 interface PlinkoConfig {
@@ -18,31 +48,44 @@ interface PlinkoConfig {
     logicalWidth: number;
     logicalHeight: number;
     aspectRatio: number;
+    walls: WallProps[];
   };
-  ball: CircleProps;
-  pin: CircleProps;
-  topCell: CellProps;
-  bottomCell: CellProps;
+  ball: BallsProps;
+  pin: PinProps;
+  topCell: CellPosition;
+  bottomCells: CellPosition[];
 };
+
+
 
 export const plinkoConfig: PlinkoConfig = {
   scene: {
     logicalWidth: 250,
     logicalHeight: 300,
-    aspectRatio: 5/6
+    aspectRatio: 5/6,
+    walls: [
+      { type: 'wall', axis: "y", value: 300 - 6, direction: 1, bounce: 0.8  },
+      { type: 'wall', axis: "x", value: 250 - 6, direction: 1, bounce: 0.8  },
+      { type: 'wall', axis: "x", value: 6, direction: -1, bounce: 0.8  },
+    ]
   },
   ball: {
-    posX: 250 / 2,
-    posY: 27,
-    radius: 6,
-    fill: '#E17346',
+    paint: {
+      radius: 6,
+      fill: '#E17346',
+    },
+    spawn: {
+      posX: 250 / 2,
+      posY: 27,
+    },
+    animation: {
+      velocity: { x: 1, y: 0 }, 
+      gravity: 980,
+      friction: 0.99,
+      bounce: 0.9
+    }
   },
-  pin: {
-    posX: 250 / 2,
-    posY: 300 / 2,
-    radius: 5, 
-    fill: '#2F2F2F',
-  },
+  pin: { radius: 5, fill: '#2F2F2F', bounce: 0.6 },
   topCell: {
     posX: 250 / 2,
     posY: 0,
@@ -50,11 +93,11 @@ export const plinkoConfig: PlinkoConfig = {
     height: 33,
     imageAlias: 'skull'
   },
-  bottomCell: {
-    posX: 0 + 30 / 2,
-    posY: 300 - 33,
-    width: 30,
-    height: 33,
-    imageAlias: 'skullBottom'
-  }
-} as const;
+  bottomCells: [
+    { posX: 25, posY: 267, width: 30, height: 33, imageAlias: 'skullBottom', multiplier: 10 },
+    { posX: 75, posY: 267, width: 30, height: 33, imageAlias: 'skullBottom', multiplier: 5 },
+    { posX: 125, posY: 267, width: 30, height: 33, imageAlias: 'skullBottom', multiplier: 2 },
+    { posX: 175, posY: 267, width: 30, height: 33, imageAlias: 'skullBottom', multiplier: 5 },
+    { posX: 225, posY: 267, width: 30, height: 33, imageAlias: 'skullBottom', multiplier: 10 },
+  ]
+};

@@ -6,13 +6,9 @@ export const onBallCaught = (
   wallThickness: number,
   config: Config
 ) => {
-  
-  console.log('Хоп, ла-ла-лэй!');
-  console.log('Bounds:', bounds);
-  
   config.obstacles.push(
     { type: "wall", axis: "x", value: bounds.minX + wallThickness, direction: -1, bounce: 0.2 },
     { type: "wall", axis: "x", value: bounds.maxX - wallThickness, direction: 1, bounce: 0.2 },
-    { type: "wall", axis: "y", value: bounds.maxY - 15, direction: 1, bounce: 0.2 }
+    { type: "wall", axis: "y", value: bounds.maxY - 15, direction: 1, bounce: 0.4 }
   );
 };
