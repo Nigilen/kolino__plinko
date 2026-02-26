@@ -2,7 +2,6 @@ interface CellProps {
   width: number;
   height: number;
   imageAlias: string;
-  multiplier?: number;
 };
 
 interface CellPosition extends CellProps {
@@ -45,7 +44,7 @@ export interface WallProps {
   bounce: number;
 };
 
-interface PlinkoConfig {
+export interface PlinkoConfig {
   scene: {
     logicalWidth: number;
     logicalHeight: number;
@@ -63,7 +62,10 @@ interface PlinkoConfig {
     halfShift: number;
   };
   topCell: CellPosition;
-  bottomCells: CellPosition[];
+  bottomCells: {
+    paint: CellProps;
+    multipliers: number[];
+  };
 };
 
 
@@ -89,7 +91,7 @@ export const plinkoConfig: PlinkoConfig = {
       posY: 27,
     },
     animation: {
-      velocity: { x: 1, y: 0 }, 
+      velocity: { x: 120, y: 0 }, 
       gravity: 980,
       friction: 0.99,
       bounce: 0.6
@@ -100,7 +102,7 @@ export const plinkoConfig: PlinkoConfig = {
     startPinRow: 2,
     pinRows: 8,
     centerX: 125,
-    startPosY: 20,
+    startPosY: 10,
     shift: 30,
     halfShift: 30 / 2,
   },
@@ -111,11 +113,12 @@ export const plinkoConfig: PlinkoConfig = {
     height: 33,
     imageAlias: 'skull'
   },
-  bottomCells: [
-    { posX: 25, posY: 267, width: 30, height: 33, imageAlias: 'skullBottom', multiplier: 10 },
-    { posX: 75, posY: 267, width: 30, height: 33, imageAlias: 'skullBottom', multiplier: 5 },
-    { posX: 125, posY: 267, width: 30, height: 33, imageAlias: 'skullBottom', multiplier: 2 },
-    { posX: 175, posY: 267, width: 30, height: 33, imageAlias: 'skullBottom', multiplier: 5 },
-    { posX: 225, posY: 267, width: 30, height: 33, imageAlias: 'skullBottom', multiplier: 10 },
-  ]
+  bottomCells: {
+    paint: {
+      width: 30,
+      height: 33,
+      imageAlias: 'skullBottom',
+    },
+    multipliers: [1, 2, 3, 4, 5, 6, 7, 8]
+  }
 };
