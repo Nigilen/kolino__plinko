@@ -36,7 +36,8 @@ export const createWorld = async () => {
     const { container } = await createCell({
       ...plinkoConfig.bottomCells.paint,
       posX: 20 + (i * plinkoConfig.bottomCells.paint.width),
-      posY: 300 - 33
+      posY: 300 - 33,
+      bonus: plinkoConfig.bottomCells.multipliers[i]
     });
     cells.push(container);
     world.addChild(container);

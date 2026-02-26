@@ -1,12 +1,12 @@
-import { checkWallCollision } from "./utils/checkWallCollision";
-import { resolveWallCollision } from "./utils/resolveWallCollision";
-import { checkPinCollision } from "./utils/checkPinCollision";
-import { resolvePinCollision } from "./utils/resolvePinCollision";
 import { Container, Ticker, type Application } from "pixi.js";
 import { plinkoConfig } from "@/config/plinkoConfig";
-import { moveBall } from "./utils/moveBall";
-import { onBallCaught } from "./utils/onBallCaught";
-import { checkBallCought } from "./utils/checkBallCought";
+import { moveBall } from "@/components/GamePlinko/utils/moveBall";
+import { checkWallCollision } from "@/components/GamePlinko/utils/checkWallCollision";
+import { resolveWallCollision } from "@/components/GamePlinko/utils/resolveWallCollision";
+import { checkPinCollision } from "@/components/GamePlinko/utils/checkPinCollision";
+import { resolvePinCollision } from "@/components/GamePlinko/utils/resolvePinCollision";
+import { onBallCaught } from "@/components/GamePlinko/utils/onBallCaught";
+import { checkBallCought } from "@/components/GamePlinko/utils/checkBallCought";
 
 export const dropBall = (
   app: Application | null, 
@@ -23,8 +23,6 @@ export const dropBall = (
     const deltaTime = ticker.elapsedMS / 1000;
     accumulator += deltaTime;
 
-    let isCought = false;
-    
     while (accumulator >= physycsTimeStep) {
       const prevY = ball.position.y;
       
@@ -41,11 +39,6 @@ export const dropBall = (
         }
       });
 
-
-
-
-
-
       const ballCought = checkBallCought(ball, cells, prevY, plinkoConfig.ball.animation);
       if (ballCought) {
         onBallCaught(
@@ -58,8 +51,7 @@ export const dropBall = (
           1,
           plinkoConfig
         )
-      }
-
+      };
 
       accumulator -= physycsTimeStep;
     }

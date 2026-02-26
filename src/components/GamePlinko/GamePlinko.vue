@@ -72,8 +72,6 @@ onUnmounted(() => {
 }
 
 .scene { 
-  outline: 3px dashed rgb(50, 148, 210);
-
   position: absolute;
   inline-size: 100%;
   block-size: 100%;
