@@ -32,7 +32,6 @@ export const createCell = async (props: CircleProps) => {
     container.addChild(text);
   };
   
-  
   image.position.set(0, 0);
   image.setSize(props.width, props.height);
   image.anchor.set(0.5, 0);

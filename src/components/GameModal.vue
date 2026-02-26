@@ -9,10 +9,12 @@ const props = defineProps<{
 
 const emits = defineEmits<{
   (e: 'update:modelValue', value: boolean): void
+  (e: 'modalClose'): void
 }>();
 
 const handleModalClose = () => {
   emits('update:modelValue', false);
+  emits('modalClose');
 };
 
 const handleKeyDown = (e: KeyboardEvent) => {

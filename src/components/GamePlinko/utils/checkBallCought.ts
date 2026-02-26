@@ -8,18 +8,9 @@ export const checkBallCought = (
   configBall: BallAnimationProps
 ) => {
   return cells.find((cell) => {
-    // ball.position.y > cell.position.y - cell.height / 2 &&
-    // ball.position.y < cell.position.y + cell.height / 2;
-
-    // return ball.position.y > cell.position.y - cell.height / 2 &&
-    // ball.position.y < cell.position.y + cell.height / 2 &&
-    // ball.position.x > cell.position.x - cell.width / 2 &&
-    // ball.position.x < cell.position.x + cell.width / 2;
-
     const cellLeftBorder = cell.x - cell.width / 2;
     const cellRightBorder = cell.x + cell.width / 2;
     const cellTopBorder = cell.y; 
-    const cellBottomBorder = cell.y + cell.height;
 
     const ballX = ball.position.x;
     const ballY = ball.position.y;

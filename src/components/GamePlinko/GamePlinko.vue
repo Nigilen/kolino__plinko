@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { Application, Assets } from 'pixi.js';
+import { Application, Assets, Container, Text } from 'pixi.js';
 import { onMounted, onUnmounted, ref } from 'vue';
 import { plinkoConfig } from "@/config/plinkoConfig";
 import { resizeGame } from '@/components/GamePlinko/resize';
@@ -8,16 +8,31 @@ import { setupGame } from '@/components/GamePlinko/setup';
 import { assets } from '@/components/GamePlinko/assets';
 import { dropBall } from '@/components/GamePlinko/dropBall';
 
+const emits = defineEmits<{
+  (e: 'ballDropped', text: string): void;
+}>();
+
 const sceneRef = ref<HTMLDivElement | null>(null);
 let app: Application | null = null; 
 let resizeObserver: ResizeObserver | null = null;
 let handleDropBall: () => void;
 let handleResize: () => void;
+let handleRestart: () => void;
+
+const handleDropedBall = (ball: Text) => {
+  const text = ball.text;
+  const timer = setTimeout(() => {
+    emits('ballDropped', text);
+    clearTimeout(timer);
+  }, 2000);
+};
 
 defineExpose<{
   runBall: () => void;
+  restartGame: () => void;
 }>({
     runBall: () => handleDropBall(),
+    restartGame: () => handleRestart()
   });
 
 onMounted(async () => {
@@ -31,25 +46,75 @@ onMounted(async () => {
   await Assets.load(assets);
   await setupGame(app, scene);
 
-  const { world, ball, pins, cells } = await createWorld();
+  let world: Container;
+  let ball: Container;
+  let pins: Container[];
+  let cells: any[];
+  let currentDrop: { stop: () => void } | undefined = undefined;
 
-  app.stage.addChild(world);
+  const initGame = async () => {
+    const newWorld = await createWorld();
+    world = newWorld.world;
+    ball = newWorld.ball;
+    pins = newWorld.pins;
+    cells = newWorld.cells;
 
-  
-  handleDropBall = () => dropBall(app, ball, pins, cells);
+    app!.stage.addChild(world);
+
+    handleDropBall = () => {
+    if (currentDrop) {
+      currentDrop.stop();
+    }
+    currentDrop = dropBall(app, ball, pins, cells, (ball: Text) => handleDropedBall(ball));
+  };
+  };
+
   handleResize = () => resizeGame(app, scene.clientWidth, scene.clientHeight, logicalWidth, logicalHeight);
+  handleRestart = async () => {
+    await Assets.unload(assets.map((asset) => asset.src));
 
+    plinkoConfig.ball.animation.velocity.x = Math.random() * (10 - -10) + -10;
+    plinkoConfig.ball.animation.velocity.y = 0;
+    plinkoConfig.ball.animation.gravity = 980;
+    plinkoConfig.ball.animation.friction = 0.99;
+    plinkoConfig.ball.animation.bounce = 0.6;
+    plinkoConfig.scene.walls = [
+      { type: 'wall', axis: "y", value: 300 - 6, direction: 1, bounce: 0.8  },
+      { type: 'wall', axis: "x", value: 250 - 6, direction: 1, bounce: 0.8  },
+      { type: 'wall', axis: "x", value: 6, direction: -1, bounce: 0.8  },
+    ];
+    plinkoConfig.ball.spawn.posX = 250 / 2;
+    plinkoConfig.ball.spawn.posY = 27;
+
+    if (currentDrop) {
+      currentDrop.stop();
+      currentDrop = undefined;
+    };
+    if (world) {
+      world.destroy({ children: true, texture: true });
+      if (world.parent) app!.stage.removeChild(world);
+    };
+    await Assets.load(assets);
+    await initGame();
+  };
+
+  await initGame();
   handleResize();
   resizeObserver = new ResizeObserver(() => handleResize());
   resizeObserver.observe(scene);
+
+  onUnmounted(() => {
+    if (currentDrop) {
+      currentDrop.stop();
+    }
+    if (world) {
+      world.destroy({ children: true, texture: true });
+    }
+    resizeObserver = null;
+    app = null;
+  });
 });
 
-onUnmounted(() => {
-  resizeObserver?.disconnect();
-  resizeObserver = null;
-  app?.destroy(true, { children: true, texture: true });
-  app = null;
-});
 </script>
 
 <template>

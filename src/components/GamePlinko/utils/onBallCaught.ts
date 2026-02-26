@@ -6,8 +6,8 @@ export const onBallCaught = (
   config: PlinkoConfig
 ) => {
   config.scene.walls.push(
-    { type: "wall", axis: "x", value: bounds.minX + 20, direction: -1, bounce: 0.5 },
-    { type: "wall", axis: "x", value: bounds.maxX - 20, direction: 1, bounce: 0.5 },
-    { type: "wall", axis: "y", value: bounds.maxY - 15, direction: 1, bounce: 0.9 }
+    { type: "wall", axis: "x", value: bounds.minX + wallThickness, direction: -1, bounce: 0.5 },
+    { type: "wall", axis: "x", value: bounds.maxX - wallThickness, direction: 1, bounce: 0.5 },
+    { type: "wall", axis: "y", value: bounds.maxY - 15, direction: 1, bounce: 0.6 }
   );
 };
