@@ -31,12 +31,12 @@ onMounted(async () => {
   await Assets.load(assets);
   await setupGame(app, scene);
 
-  const { world, ball, pins } = await createWorld();
+  const { world, ball, pins, cells } = await createWorld();
 
   app.stage.addChild(world);
 
   
-  handleDropBall = () => dropBall(app, ball, pins);
+  handleDropBall = () => dropBall(app, ball, pins, cells);
   handleResize = () => resizeGame(app, scene.clientWidth, scene.clientHeight, logicalWidth, logicalHeight);
 
   handleResize();
