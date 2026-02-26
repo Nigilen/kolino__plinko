@@ -7,7 +7,7 @@ export const setupGame = async (app: Application, scene: HTMLDivElement) => {
     backgroundAlpha: 0,
     autoDensity: true,
     antialias: true,
-    resolution: window.devicePixelRatio || 2,
+    resolution: window.devicePixelRatio || 1,
   });
   scene.appendChild(app.canvas);
 };
