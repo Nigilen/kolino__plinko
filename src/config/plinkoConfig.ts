@@ -35,6 +35,8 @@ export interface PinProps {
   bounce: number;
 };
 
+
+
 export interface WallProps {
   type: 'wall';
   axis: 'x' | 'y';
@@ -52,6 +54,14 @@ interface PlinkoConfig {
   };
   ball: BallsProps;
   pin: PinProps;
+  pins: {
+    startPinRow: number;
+    pinRows: number;
+    centerX: number;
+    startPosY: number;
+    shift: number;
+    halfShift: number;
+  };
   topCell: CellPosition;
   bottomCells: CellPosition[];
 };
@@ -82,10 +92,18 @@ export const plinkoConfig: PlinkoConfig = {
       velocity: { x: 1, y: 0 }, 
       gravity: 980,
       friction: 0.99,
-      bounce: 0.9
+      bounce: 0.6
     }
   },
   pin: { radius: 5, fill: '#2F2F2F', bounce: 0.6 },
+  pins: {
+    startPinRow: 2,
+    pinRows: 8,
+    centerX: 125,
+    startPosY: 20,
+    shift: 30,
+    halfShift: 30 / 2,
+  },
   topCell: {
     posX: 250 / 2,
     posY: 0,
