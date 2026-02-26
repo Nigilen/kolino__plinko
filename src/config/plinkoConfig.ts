@@ -91,7 +91,7 @@ export const plinkoConfig: PlinkoConfig = {
       posY: 27,
     },
     animation: {
-      velocity: { x: 120, y: 0 }, 
+      velocity: { x: 12, y: 0 }, 
       gravity: 980,
       friction: 0.99,
       bounce: 0.6

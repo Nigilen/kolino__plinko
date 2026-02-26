@@ -1,32 +1,37 @@
-import { checkWallCollision } from "./utils/checkWallCollision";
-import { resolveWallCollision } from "./utils/resolveWallCollision";
-import { checkPinCollision } from "./utils/checkPinCollision";
-import { resolvePinCollision } from "./utils/resolvePinCollision";
-import { Container, Ticker, type Application } from "pixi.js";
+import { Container, Text, Ticker, type Application } from "pixi.js";
 import { plinkoConfig } from "@/config/plinkoConfig";
-import { moveBall } from "./utils/moveBall";
-import { onBallCaught } from "./utils/onBallCaught";
-import { checkBallCought } from "./utils/checkBallCought";
+import { moveBall } from "@/components/GamePlinko/utils/moveBall";
+import { checkWallCollision } from "@/components/GamePlinko/utils/checkWallCollision";
+import { resolveWallCollision } from "@/components/GamePlinko/utils/resolveWallCollision";
+import { checkPinCollision } from "@/components/GamePlinko/utils/checkPinCollision";
+import { resolvePinCollision } from "@/components/GamePlinko/utils/resolvePinCollision";
+import { onBallCaught } from "@/components/GamePlinko/utils/onBallCaught";
+import { checkBallCought } from "@/components/GamePlinko/utils/checkBallCought";
 
 export const dropBall = (
   app: Application | null, 
   ball: Container, 
   pins: Container[], 
-  cells: Container[]
+  cells: Container[],
+  onFinish: (ball: Text) => void
 ) => {
   if (!app || !ball) return;
   
   let accumulator = 0;
+  let isRunning = true;
   
   const animationTicker = (ticker: Ticker) => {
+    if (!ball || !ball.position) {
+      app.ticker.remove(animationTicker);
+      return;
+    }
+
     const physycsTimeStep = 1 / 60;
     const deltaTime = ticker.elapsedMS / 1000;
     accumulator += deltaTime;
 
-    let isCought = false;
-    
-    while (accumulator >= physycsTimeStep) {
-      const prevY = ball.position.y;
+    while (accumulator >= physycsTimeStep && isRunning) {
+      let prevY = ball.position.y;
       
       moveBall(ball, plinkoConfig.ball.animation, physycsTimeStep);
 
@@ -41,13 +46,9 @@ export const dropBall = (
         }
       });
 
-
-
-
-
-
       const ballCought = checkBallCought(ball, cells, prevY, plinkoConfig.ball.animation);
       if (ballCought) {
+        onFinish(ballCought.children[1] as Text);
         onBallCaught(
           { 
             minX: ballCought.position.x - 10, 
@@ -55,15 +56,21 @@ export const dropBall = (
             minY: ballCought.position.y + 10, 
             maxY: ballCought.position.y + ballCought.height 
           },
-          1,
+          20,
           plinkoConfig
         )
-      }
-
+      };
 
       accumulator -= physycsTimeStep;
     }
   };
 
   app.ticker.add(animationTicker);
+
+  return {
+    stop: () => {
+      isRunning = false;
+      app.ticker.remove(animationTicker);
+    }
+  };
 };

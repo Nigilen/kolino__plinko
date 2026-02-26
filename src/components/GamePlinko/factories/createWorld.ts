@@ -7,12 +7,8 @@ export const createWorld = async () => {
   const world: Container = new Container();
   let pins: Container[] = [];
   let cells: Container[] = [];
-
   const { container: ball } = await createCircle({...plinkoConfig.ball.paint, ...plinkoConfig.ball.spawn});
-
-
   const { container: topCell } = await createCell(plinkoConfig.topCell);
-
   world.addChild(ball, topCell);
 
   for (let i = plinkoConfig.pins.startPinRow; i <= plinkoConfig.pins.pinRows; i++) {
@@ -30,18 +26,16 @@ export const createWorld = async () => {
       world.addChild(container);
     };
   };
-
-
   for (let i = 0; i < plinkoConfig.bottomCells.multipliers.length; i++) {
     const { container } = await createCell({
       ...plinkoConfig.bottomCells.paint,
       posX: 20 + (i * plinkoConfig.bottomCells.paint.width),
-      posY: 300 - 33
+      posY: 300 - 33,
+      bonus: plinkoConfig.bottomCells.multipliers[i]
     });
     cells.push(container);
     world.addChild(container);
   };
-  
 
   return { 
     world, 
