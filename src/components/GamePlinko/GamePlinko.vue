@@ -31,7 +31,7 @@ const handleDropedBall = (ball: Text) => {
   const timer = setTimeout(() => {
     emits('ballDropped', text);
     clearTimeout(timer);
-  }, 2000);
+  }, 500);
 };
 
 defineExpose<{
