@@ -1,4 +1,4 @@
-import type { WallProps } from "@/config/plinkoConfig";
+import type { WallProps } from "@/components/GamePlinko/types";
 import type { Container } from "pixi.js";
 
 export const checkWallCollision = (

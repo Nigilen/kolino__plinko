@@ -1,5 +1,5 @@
 import type { Container } from "pixi.js";
-import type { BallAnimationProps } from "@/config/plinkoConfig";
+import type { BallAnimationProps } from "@/components/GamePlinko/types";
 
 export const moveBall = (ball: Container, config: BallAnimationProps, multiply: number ) => {
   config.velocity.y += config.gravity * multiply;

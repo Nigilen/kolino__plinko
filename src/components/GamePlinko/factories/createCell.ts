@@ -1,7 +1,7 @@
 import { Assets, Container, Sprite, Text } from "pixi.js";
-import type { CellProps } from "@/components/GamePlinko/types";
+import type { CellPosition } from "@/components/GamePlinko/types";
 
-export const createCell = async (props: CellProps) => {
+export const createCell = async (props: CellPosition) => {
   const container = new Container();
   const texture = Assets.get(props.imageAlias);
   const image = new Sprite(texture);

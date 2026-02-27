@@ -1,4 +1,4 @@
-import type { BallAnimationProps } from "@/config/plinkoConfig";
+import type { BallAnimationProps } from "@/components/GamePlinko/types";
 import type { Container } from "pixi.js";
 
 export const checkBallCought = (

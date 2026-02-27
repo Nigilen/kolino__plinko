@@ -1,4 +1,4 @@
-import type { PlinkoConfig } from "@/config/plinkoConfig";
+import type { PlinkoConfig } from "@/components/GamePlinko/types";
 
 export const onBallCaught = (
   bounds: { minX: number; maxX: number; minY: number; maxY: number },

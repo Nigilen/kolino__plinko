@@ -4,6 +4,7 @@ import GameTitle from '@/components/GameTitle.vue';
 import GameModal from '@/components/GameModal.vue';
 import GamePlinko from '@/components/GamePlinko/GamePlinko.vue';
 
+// [ ]: разобраться
 const gameRef = ref<InstanceType<typeof GamePlinko> | null>(null);
 
 const isOpenModal = ref(false);
