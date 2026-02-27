@@ -12,6 +12,8 @@ const emits = defineEmits<{
   (e: 'ballDropped', text: string): void;
 }>();
 
+const logicalWidth: number = plinkoConfig.scene.logicalWidth;
+const logicalHeight: number = plinkoConfig.scene.logicalHeight;
 const sceneRef = ref<HTMLDivElement | null>(null);
 let app: Application | null = null; 
 let resizeObserver: ResizeObserver | null = null;
@@ -43,15 +45,10 @@ defineExpose<{
 onMounted(async () => {
   app = new Application();
   if (!sceneRef.value) return;
-
-  const scene: HTMLDivElement = sceneRef.value;
-  const logicalWidth: number = plinkoConfig.scene.logicalWidth;
-  const logicalHeight: number = plinkoConfig.scene.logicalHeight;
+  const scene: HTMLDivElement | null = sceneRef.value;
 
   await Assets.load(assets);
   await setupGame(app, scene);
-
-
 
   const initGame = async () => {
     const newWorld = await createWorld();
@@ -63,11 +60,9 @@ onMounted(async () => {
     app!.stage.addChild(world);
 
     handleDropBall = () => {
-    if (currentDrop) {
-      currentDrop.stop();
-    }
-    currentDrop = dropBall(app, ball, pins, cells, (ball: Text) => handleDropedBall(ball));
-  };
+      if (currentDrop) currentDrop.stop();
+      currentDrop = dropBall(app, ball, pins, cells, (ball: Text) => handleDropedBall(ball));
+    };
   };
 
   handleResize = () => resizeGame(app, scene.clientWidth, scene.clientHeight, logicalWidth, logicalHeight);
