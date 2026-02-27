@@ -2,7 +2,6 @@
 import { ref, type Ref } from 'vue';
 import GameTitle from '@/components/GameTitle.vue';
 import GameModal from '@/components/GameModal.vue';
-import { mainConfig } from '@/config/mainConfig';
 import GamePlinko from '@/components/GamePlinko/GamePlinko.vue';
 
 const gameRef = ref<InstanceType<typeof GamePlinko> | null>(null);
