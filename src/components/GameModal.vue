@@ -2,8 +2,6 @@
 import { mainConfig } from '@/config/mainConfig';
 import { onMounted, onUnmounted } from 'vue';
 
-// [ ]: разобраться
-
 const props = defineProps<{
   modelValue: boolean;
   winValue: number | string;

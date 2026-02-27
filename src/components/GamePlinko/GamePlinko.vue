@@ -18,6 +18,11 @@ let resizeObserver: ResizeObserver | null = null;
 let handleDropBall: () => void;
 let handleResize: () => void;
 let handleRestart: () => void;
+let world: Container;
+let ball: Container;
+let pins: Container[];
+let cells: any[];
+let currentDrop: { stop: () => void } | undefined = undefined;
 
 const handleDropedBall = (ball: Text) => {
   const text = ball.text;
@@ -46,11 +51,7 @@ onMounted(async () => {
   await Assets.load(assets);
   await setupGame(app, scene);
 
-  let world: Container;
-  let ball: Container;
-  let pins: Container[];
-  let cells: any[];
-  let currentDrop: { stop: () => void } | undefined = undefined;
+
 
   const initGame = async () => {
     const newWorld = await createWorld();
@@ -103,16 +104,17 @@ onMounted(async () => {
   resizeObserver = new ResizeObserver(() => handleResize());
   resizeObserver.observe(scene);
 
-  onUnmounted(() => {
-    if (currentDrop) {
-      currentDrop.stop();
-    }
-    if (world) {
-      world.destroy({ children: true, texture: true });
-    }
-    resizeObserver = null;
-    app = null;
-  });
+});
+
+onUnmounted(() => {
+  if (currentDrop) {
+    currentDrop.stop();
+  }
+  if (world) {
+    world.destroy({ children: true, texture: true });
+  }
+  resizeObserver = null;
+  app = null;
 });
 
 </script>
