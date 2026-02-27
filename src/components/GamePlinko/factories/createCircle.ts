@@ -1,11 +1,5 @@
 import { Container, Graphics } from "pixi.js";
-
-interface CircleProps {
-  posX: number;
-  posY: number;
-  radius: number;
-  fill: string;
-};
+import type { CircleProps } from "@/components/GamePlinko/types";
 
 export const createCircle = async (props: CircleProps) => {
   const container = new Container();
