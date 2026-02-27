@@ -10,7 +10,6 @@ export const createWorld = async () => {
   const { container: ball } = await createCircle({...plinkoConfig.ball.paint, ...plinkoConfig.ball.spawn});
   const { container: topCell } = await createCell(plinkoConfig.topCell);
   world.addChild(ball, topCell);
-
   for (let i = plinkoConfig.pins.startPinRow; i <= plinkoConfig.pins.pinRows; i++) {
     for (let j = 0; j <= i; j++) {
       const positions = {
@@ -36,7 +35,6 @@ export const createWorld = async () => {
     cells.push(container);
     world.addChild(container);
   };
-
   return { 
     world, 
     ball,
