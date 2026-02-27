@@ -8,8 +8,12 @@ import { setupGame } from '@/components/GamePlinko/setup';
 import { assets } from '@/components/GamePlinko/assets';
 import { dropBall } from '@/components/GamePlinko/dropBall';
 
+const props = defineProps<{
+  openModal: boolean;
+}>();
+
 const emits = defineEmits<{
-  (e: 'ballDropped', text: string): void;
+  (e: 'update:openModal', value: boolean, text: string): void;
 }>();
 
 const logicalWidth: number = plinkoConfig.scene.logicalWidth;
@@ -29,7 +33,7 @@ let currentDrop: { stop: () => void } | undefined = undefined;
 const handleDropedBall = (ball: Text) => {
   const text = ball.text;
   const timer = setTimeout(() => {
-    emits('ballDropped', text);
+    emits('update:openModal', true, text);
     clearTimeout(timer);
   }, 500);
 };

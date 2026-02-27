@@ -16,13 +16,9 @@ const handlePlay = () => {
   gameRef.value.runBall();
 };
 
-const handleFinishGame = (text: string) => {
+const handleOpenModal = (value: boolean,text: string) => {
   winValue.value = text;
-  handleOpenModal();
-};
-
-const handleOpenModal = () => {
-  isOpenModal.value = true;
+  isOpenModal.value = value;
 };
 
 const handleCloseModal = () => {
@@ -36,15 +32,24 @@ const handleCloseModal = () => {
 <template>
   <main class="main">
     <GameTitle />
-    <GamePlinko ref="gameRef" @ballDropped="(text: string) => handleFinishGame(text)" />
-    <button :disabled="isPlay" class="button" type="button" @click="handlePlay">Play</button>
+    <GamePlinko 
+      ref="gameRef" 
+      v-model:openModal="isOpenModal"
+      @update:openModal="handleOpenModal" 
+    />
+    <button 
+      :disabled="isPlay" 
+      class="button" 
+      type="button" 
+      @click="handlePlay"
+    >Play</button>
   </main>
   <Teleport to="body">
     <Transition>
       <GameModal 
-        v-model="isOpenModal"
+        v-model:openModal="isOpenModal"
+        @update:openModal="handleCloseModal" 
         :winValue="winValue" 
-        @modalClose="handleCloseModal" 
       />
     </Transition>
   </Teleport>
