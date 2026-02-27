@@ -1,4 +1,4 @@
-import { Container, Text, Ticker, type Application } from "pixi.js";
+import { Container, Text, Ticker, type Application, type ContainerChild } from "pixi.js";
 import { plinkoConfig } from "@/config/plinkoConfig";
 import { moveBall } from "@/components/GamePlinko/utils/moveBall";
 import { checkWallCollision } from "@/components/GamePlinko/utils/checkWallCollision";
@@ -47,8 +47,10 @@ export const dropBall = (
       });
 
       const ballCought = checkBallCought(ball, cells, prevY, plinkoConfig.ball.animation);
+      
       if (ballCought) {
-        onFinish(ballCought.children[1] as Text);
+        const ballTextChildren: Text = ballCought.children[1] as Text;
+        onFinish(ballTextChildren);
         onBallCaught(
           { 
             minX: ballCought.position.x - 10, 

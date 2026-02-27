@@ -2,7 +2,6 @@
 import { ref, type Ref } from 'vue';
 import GameTitle from '@/components/GameTitle.vue';
 import GameModal from '@/components/GameModal.vue';
-import { mainConfig } from '@/config/mainConfig';
 import GamePlinko from '@/components/GamePlinko/GamePlinko.vue';
 
 const gameRef = ref<InstanceType<typeof GamePlinko> | null>(null);
@@ -13,17 +12,13 @@ const winValue: Ref<number | string> = ref(0);
 
 const handlePlay = () => {
   if (!gameRef.value) return;
-  gameRef.value.runBall();
   isPlay.value = true;
+  gameRef.value.runBall();
 };
 
-const handleFinishGame = (text: string) => {
+const handleOpenModal = (value: boolean,text: string) => {
   winValue.value = text;
-  handleOpenModal();
-};
-
-const handleOpenModal = () => {
-  isOpenModal.value = true;
+  isOpenModal.value = value;
 };
 
 const handleCloseModal = () => {
@@ -37,15 +32,24 @@ const handleCloseModal = () => {
 <template>
   <main class="main">
     <GameTitle />
-    <GamePlinko ref="gameRef" @ballDropped="(text: string) => handleFinishGame(text)" />
-    <button :disabled="isPlay" class="button" type="button" @click="handlePlay">Play</button>
+    <GamePlinko 
+      ref="gameRef" 
+      v-model:openModal="isOpenModal"
+      @update:openModal="handleOpenModal" 
+    />
+    <button 
+      :disabled="isPlay" 
+      class="button" 
+      type="button" 
+      @click="handlePlay"
+    >Play</button>
   </main>
   <Teleport to="body">
     <Transition>
       <GameModal 
-        v-model="isOpenModal"
+        v-model:openModal="isOpenModal"
+        @update:openModal="handleCloseModal" 
         :winValue="winValue" 
-        @modalClose="handleCloseModal" 
       />
     </Transition>
   </Teleport>
@@ -85,6 +89,7 @@ const handleCloseModal = () => {
   &:disabled {
     background-color: var(--primary-color);
     transform: scale(0.9);
+    cursor: not-allowed;
   }
 }
 

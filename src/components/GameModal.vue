@@ -1,41 +1,24 @@
 <script lang="ts" setup>
 import { mainConfig } from '@/config/mainConfig';
-import { onMounted, onUnmounted } from 'vue';
 
 const props = defineProps<{
-  modelValue: boolean;
+  openModal: boolean;
   winValue: number | string;
 }>();
 
 const emits = defineEmits<{
-  (e: 'update:modelValue', value: boolean): void
-  (e: 'modalClose'): void
+  (e: 'update:openModal', value: boolean): void
 }>();
 
 const handleModalClose = () => {
-  emits('update:modelValue', false);
-  emits('modalClose');
+  emits('update:openModal', false);
 };
-
-const handleKeyDown = (e: KeyboardEvent) => {
-  if (e.key === 'Escape') {
-    handleModalClose();
-  }
-};
-
-onMounted(() => {
-  window.addEventListener('keydown', handleKeyDown);
-});
-
-onUnmounted(() => {
-  window.removeEventListener('keydown', handleKeyDown);
-});
 
 </script>
 
 <template>
   <Transition>
-    <section class="modal" v-if="props.modelValue" @click.self="handleModalClose">
+    <section class="modal" v-if="props.openModal">
       <div class="modal__content">
         <h2 class="modal__title">
           {{ mainConfig.modal.title }}

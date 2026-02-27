@@ -1,11 +1,4 @@
-interface MainConfig {
-  title: string;
-  modal: {
-    title: string;
-    bonus: string;
-    button: string;
-  };
-}
+import type { MainConfig } from "@/components/GamePlinko/types";
 
 export const mainConfig: MainConfig = {
   title: 'Plinko',

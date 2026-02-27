@@ -1,5 +1,5 @@
 import type { Container } from "pixi.js";
-import type { BallAnimationProps, WallProps } from "@/config/plinkoConfig";
+import type { BallAnimationProps } from "@/components/GamePlinko/types";
 
 export const resolvePinCollision = (
   ball: Container, 

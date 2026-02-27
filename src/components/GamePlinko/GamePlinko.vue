@@ -8,23 +8,34 @@ import { setupGame } from '@/components/GamePlinko/setup';
 import { assets } from '@/components/GamePlinko/assets';
 import { dropBall } from '@/components/GamePlinko/dropBall';
 
-const emits = defineEmits<{
-  (e: 'ballDropped', text: string): void;
+const props = defineProps<{
+  openModal: boolean;
 }>();
 
+const emits = defineEmits<{
+  (e: 'update:openModal', value: boolean, text: string): void;
+}>();
+
+const logicalWidth: number = plinkoConfig.scene.logicalWidth;
+const logicalHeight: number = plinkoConfig.scene.logicalHeight;
 const sceneRef = ref<HTMLDivElement | null>(null);
 let app: Application | null = null; 
 let resizeObserver: ResizeObserver | null = null;
 let handleDropBall: () => void;
 let handleResize: () => void;
 let handleRestart: () => void;
+let world: Container;
+let ball: Container;
+let pins: Container[];
+let cells: any[];
+let currentDrop: { stop: () => void } | undefined = undefined;
 
 const handleDropedBall = (ball: Text) => {
   const text = ball.text;
   const timer = setTimeout(() => {
-    emits('ballDropped', text);
+    emits('update:openModal', true, text);
     clearTimeout(timer);
-  }, 2000);
+  }, 500);
 };
 
 defineExpose<{
@@ -38,19 +49,10 @@ defineExpose<{
 onMounted(async () => {
   app = new Application();
   if (!sceneRef.value) return;
-
-  const scene: HTMLDivElement = sceneRef.value;
-  const logicalWidth: number = plinkoConfig.scene.logicalWidth;
-  const logicalHeight: number = plinkoConfig.scene.logicalHeight;
+  const scene: HTMLDivElement | null = sceneRef.value;
 
   await Assets.load(assets);
   await setupGame(app, scene);
-
-  let world: Container;
-  let ball: Container;
-  let pins: Container[];
-  let cells: any[];
-  let currentDrop: { stop: () => void } | undefined = undefined;
 
   const initGame = async () => {
     const newWorld = await createWorld();
@@ -62,11 +64,9 @@ onMounted(async () => {
     app!.stage.addChild(world);
 
     handleDropBall = () => {
-    if (currentDrop) {
-      currentDrop.stop();
-    }
-    currentDrop = dropBall(app, ball, pins, cells, (ball: Text) => handleDropedBall(ball));
-  };
+      if (currentDrop) currentDrop.stop();
+      currentDrop = dropBall(app, ball, pins, cells, (ball: Text) => handleDropedBall(ball));
+    };
   };
 
   handleResize = () => resizeGame(app, scene.clientWidth, scene.clientHeight, logicalWidth, logicalHeight);
@@ -103,16 +103,17 @@ onMounted(async () => {
   resizeObserver = new ResizeObserver(() => handleResize());
   resizeObserver.observe(scene);
 
-  onUnmounted(() => {
-    if (currentDrop) {
-      currentDrop.stop();
-    }
-    if (world) {
-      world.destroy({ children: true, texture: true });
-    }
-    resizeObserver = null;
-    app = null;
-  });
+});
+
+onUnmounted(() => {
+  if (currentDrop) {
+    currentDrop.stop();
+  }
+  if (world) {
+    world.destroy({ children: true, texture: true });
+  }
+  resizeObserver = null;
+  app = null;
 });
 
 </script>
